@@ -1,36 +1,73 @@
-using Microsoft.VisualBasic.ApplicationServices;
-using System.Drawing;
+using System;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Windows.Forms;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using Image = System.Drawing.Image;
 
 namespace WinFormsBMP
 {
+   
     public partial class Form1 : Form
     {
         public Form1()
         {
             InitializeComponent();
         }
+        string bmp1 = @"1.bmp";
 
-        Bitmap image1;
-        private void button1_Click(object sender, EventArgs e)
+        string bmp2 = @"2.bmp";
+
+        private void button1_Click_1(object sender, EventArgs e)
         {
+
             try
             {
-                // Retrieve the image.
-                
-
-                Bitmap bmp = new Bitmap(@"C:\Users\dimon\source\repos\WinFormsBMP\Bmp\2.bmp"); // c : \ 2.bmp - адрес        изображения
+                Bitmap bmp = new Bitmap(bmp1);
                 pictureBox1.Image = bmp;
                 Color[,] color = new Color[bmp.Width, bmp.Height];
                 for (int y = 0; y < bmp.Height; y++)
+                {
                     for (int x = 0; x < bmp.Width; x++)
                     {
                         color[x, y] = bmp.GetPixel(x, y);
+                        
                     }
+                }
+                double[] average = new double[100];
+                for (int x = 0; x < bmp.Width; x++)
+                {
+                    double summx = 0;
+                    for (int y = 0; y < bmp.Height; y++)
+                    {
+                        int a = Convert.ToInt32((color[x, y].R + color[x, y].G + color[x, y].B)/3);
+                        summx = summx + a;
+                    }
+                    average[x] = summx/average.Length;
+                }
+                double[] plusaverage = new double[100];
+                double[] minusaverage = new double[100];
+                for (int i = 0; i < average.Length; i++)
+                {
+                    plusaverage[i] = average[i];
+                    plusaverage[i] += 50;
+                }
+                for (int i = 0; i < average.Length; i++)
+                {
+                    minusaverage[i] = average[i];
+                    minusaverage[i] -= 50;
+                }
+                double[,] binararray = new double[100,100];
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    int x = 0;
+                    for (; x < bmp.Width - 1; x++)
+                    {
+                        int a = Convert.ToInt32((color[x, y].R + color[x, y].G + color[x, y].B) / 3);
+                        if (a < plusaverage[x] && a > minusaverage[x])
+                        {
+                            binararray[y,x] = 1;
+                        }
+                    }
+                }
 
                 StringBuilder t = new StringBuilder();
 
@@ -38,87 +75,86 @@ namespace WinFormsBMP
                 {
                     for (int x = 0; x < bmp.Width; x++)
                     {
-                        t.Append(color[x, y].R.ToString("X2"));
-                        t.Append(color[x, y].G.ToString("X2"));
-                        t.Append(color[x, y].B.ToString("X2") + " ");
+                        t.Append(((color[x, y].R + color[x, y].G + color[x, y].B) / 3).ToString("") + "..");
                     }
+                    
                     t.AppendLine();
                 }
                 textBox1.Text = t.ToString();
+            }
 
+            catch (ArgumentException)
+            {
+                MessageBox.Show("There was an error.");
+            }
+        }
 
-
-                StreamWriter steamWriter = new StreamWriter(@"C:\Users\dimon\source\repos\WinFormsBMP\Bmp\2.txt");
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                Bitmap bmp = new Bitmap(bmp1);
+                pictureBox3.Image = bmp;
+                Color[,] color = new Color[bmp.Width, bmp.Height];
                 for (int y = 0; y < bmp.Height; y++)
                 {
                     for (int x = 0; x < bmp.Width; x++)
                     {
-                        steamWriter.Write(color[x, y].R.ToString("X2"));
-                        steamWriter.Write(color[x, y].G.ToString("X2"));
-                        steamWriter.Write(color[x, y].B.ToString("X2") + " ");
+                        color[x, y] = bmp.GetPixel(x, y);
                     }
-                    steamWriter.WriteLine();
                 }
-                steamWriter.Close();
-                //// Loop through the images pixels to reset color.
-                //for (x = 0; x < image1.Width; x++)
-                //{
 
+                StringBuilder t = new StringBuilder();
 
-                //    for (y = 0; y < image1.Height; y++)
-                //    {
-                //        textBox1.Text = $"{image1.GetPixel(x, y)}";
-                //        Color pixelColor = image1.GetPixel(x, y);
-                //        Color newColor = Color.FromArgb(pixelColor.G, 66, 66);
-                //        image1.SetPixel(x, y, newColor);
-                //    }
-                //}
-
-                //// Set the PictureBox to display the image.
-                //pictureBox1.Image = image1;
-
-                //// Display the pixel format in Label1.
-                //label1.Text = "Pixel format: " + image1.PixelFormat.ToString();
+                for (int y = 0; y < bmp.Height; y++)
+                {
+                    for (int x = 0; x < bmp.Width; x++)
+                    {
+                        t.Append(((color[x, y].R + color[x, y].G + color[x, y].B) / 3).ToString("") + "..");
+                        
+                    }
+                    t.AppendLine();
+                }
+                textBox3.Text = t.ToString();
             }
             catch (ArgumentException)
             {
-                MessageBox.Show("There was an error." +
-                    "Check the path to the image file.");
+                MessageBox.Show("There was an error.");
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
             
-                OpenFileDialog op = new OpenFileDialog();
-                op.InitialDirectory = "D:/";
-                op.Filter = "All Files|*.*|JPEGs|*.jpg|Bitmaps|*.bmp|GIFs|*.gif";
-                op.FilterIndex = 1;
-
-                if (op.ShowDialog() == DialogResult.OK)
-                {
-                    pictureBox3.Image = Image.FromFile(op.FileName);
-                    pictureBox3.SizeMode = PictureBoxSizeMode.StretchImage;
-                    pictureBox3.BorderStyle = BorderStyle.Fixed3D;
-                    Bitmap img = new Bitmap(op.FileName);
-                    StringBuilder t = new StringBuilder();
-                    for (int i = 0; i < img.Width; i++)
-                    {
-                        for (int j = 0; j < img.Height; j++)
-                        {
-                            t.Append((img.GetPixel(i, j).R > 100 && img.GetPixel(i, j).G > 100 &&
-                                     img.GetPixel(i, j).B > 100) ? 0 : 1);
-                        }
-                        t.AppendLine();
-                    }
-                    textBox3.Text = t.ToString();
+                Bitmap bmp = new Bitmap(@"C:\Users\dimon\source\repos\WinFormsBMP\WinFormsBMP\2.bmp");
+                Color[,] color = new Color[bmp.Width, bmp.Height];
                 
-            }
-        }
+                int height = color.GetLength(0);
+                int width = color.GetLength(1);
+                BitmapData data = bmp.LockBits(new Rectangle(new System.Drawing.Point(0, 0), bmp.Size),
+                                 ImageLockMode.ReadWrite,
+                                 PixelFormat.Format24bppRgb);
+                int stride = data.Stride;
+                IntPtr scan0 = data.Scan0;
+                int pixlSize = stride / width;
 
-        private void pictureBox1_Click(object sender, EventArgs e)
-        {
+                unsafe
+                {
+                    for (int i = 100; i < height; i++)
+                    {
+                        var resultRow = (byte*)scan0 + (i * stride);
+                        for (int j = 0; j < width; j++)
+                        {
+                            resultRow[j * pixlSize] = color[i, j].R;
+                            resultRow[j * pixlSize + 1] = color[i, j].G;
+                            resultRow[j * pixlSize + 2] = color[i, j].B;
+                        }
+                    }
+                }
 
+                bmp.UnlockBits(data);
+                bmp.Save(@"C:\Users\dimon\source\repos\WinFormsBMP\WinFormsBMP\result.bmp");
+            
         }
     }
 }
