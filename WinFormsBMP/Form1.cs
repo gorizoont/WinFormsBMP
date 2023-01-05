@@ -15,9 +15,14 @@ namespace WinFormsBMP
         {
             InitializeComponent();
         }
-        string bmp1 = @"1.bmp";
+        string bmp1 = @"C:\Users\dimon\Source\Repos\gorizoont\WinFormsBMP\WinFormsBMP\1.bmp";
 
-        string bmp2 = @"2.bmp";
+        string bmp2 = @"C:\Users\dimon\Source\Repos\gorizoont\WinFormsBMP\WinFormsBMP\2.bmp";
+
+        string resultbmp1 = @"C:\Users\dimon\Source\Repos\gorizoont\WinFormsBMP\WinFormsBMP\result1.bmp";
+
+        string resultbmp2 = @"C:\Users\dimon\Source\Repos\gorizoont\WinFormsBMP\WinFormsBMP\result2.bmp";
+
 
         private void button1_Click_1(object sender, EventArgs e)
         {
@@ -82,7 +87,7 @@ namespace WinFormsBMP
                                 bitmapw.SetPixel(w, q, Color.Black);
                         }
                     }
-                    bitmapw.Save("C:\\Users\\dimon\\source\\repos\\WinFormsBMP\\WinFormsBMP\\result1.bmp");
+                    bitmapw.Save(resultbmp1);
 
                 }
                 for (int y = 0; y < 100; y++)
@@ -108,6 +113,9 @@ namespace WinFormsBMP
                     t.AppendLine();
                 }
                 textBox1.Text = t.ToString();
+
+                
+                pictureBox2.Image = Image.FromFile(resultbmp1);
             }
 
             catch (ArgumentException)
@@ -120,7 +128,7 @@ namespace WinFormsBMP
 
             try
             {
-                Bitmap bmp = new Bitmap("C:\\Users\\dimon\\source\\repos\\WinFormsBMP\\WinFormsBMP\\2.bmp");
+                Bitmap bmp = new Bitmap(bmp2);
                 pictureBox3.Image = bmp;
                 Color[,] color = new Color[bmp.Width, bmp.Height];
                 for (int y = 0; y < bmp.Height; y++)
@@ -179,7 +187,7 @@ namespace WinFormsBMP
                                 bitmapq.SetPixel(w, q, Color.Black);
                         }
                     }
-                    bitmapq.Save("C:\\Users\\dimon\\source\\repos\\WinFormsBMP\\WinFormsBMP\\result2.bmp");
+                    bitmapq.Save(resultbmp2);
                 }
                 
 
@@ -208,6 +216,9 @@ namespace WinFormsBMP
                     t.AppendLine();
                 }
                 textBox3.Text = t.ToString();
+
+                pictureBox4.Image = Image.FromFile(resultbmp2);
+
             }
 
             catch (ArgumentException)
@@ -219,38 +230,41 @@ namespace WinFormsBMP
  
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void button3_Click_1(object sender, EventArgs e)
         {
-            
-                Bitmap bmp = new Bitmap(@"C:\Users\dimon\source\repos\WinFormsBMP\WinFormsBMP\2.bmp");
-                Color[,] color = new Color[bmp.Width, bmp.Height];
-                
-                int height = color.GetLength(0);
-                int width = color.GetLength(1);
-                BitmapData data = bmp.LockBits(new Rectangle(new System.Drawing.Point(0, 0), bmp.Size),
-                                 ImageLockMode.ReadWrite,
-                                 PixelFormat.Format24bppRgb);
-                int stride = data.Stride;
-                IntPtr scan0 = data.Scan0;
-                int pixlSize = stride / width;
+            Bitmap bmp = new Bitmap(@"C:\Users\dimon\Source\Repos\gorizoont\WinFormsBMP\WinFormsBMP\2.bmp");
+            Color[,] color = new Color[bmp.Width, bmp.Height];
 
-                unsafe
+            int height = color.GetLength(0);
+            int width = color.GetLength(1);
+            BitmapData data = bmp.LockBits(new Rectangle(new System.Drawing.Point(0, 0), bmp.Size),
+                             ImageLockMode.ReadWrite,
+                             PixelFormat.Format24bppRgb);
+            int stride = data.Stride;
+            IntPtr scan0 = data.Scan0;
+            int pixlSize = stride / width;
+
+            unsafe
+            {
+                for (int i = 100; i < height; i++)
                 {
-                    for (int i = 100; i < height; i++)
+                    var resultRow = (byte*)scan0 + (i * stride);
+                    for (int j = 0; j < width; j++)
                     {
-                        var resultRow = (byte*)scan0 + (i * stride);
-                        for (int j = 0; j < width; j++)
-                        {
-                            resultRow[j * pixlSize] = color[i, j].R;
-                            resultRow[j * pixlSize + 1] = color[i, j].G;
-                            resultRow[j * pixlSize + 2] = color[i, j].B;
-                        }
+                        resultRow[j * pixlSize] = color[i, j].R;
+                        resultRow[j * pixlSize + 1] = color[i, j].G;
+                        resultRow[j * pixlSize + 2] = color[i, j].B;
                     }
                 }
+            }
 
-                bmp.UnlockBits(data);
-                bmp.Save(@"C:\Users\dimon\source\repos\WinFormsBMP\WinFormsBMP\result.bmp");
-            
+            bmp.UnlockBits(data);
+            bmp.Save(@"C:\Users\dimon\Source\Repos\gorizoont\WinFormsBMP\WinFormsBMP\0.bmp");
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
